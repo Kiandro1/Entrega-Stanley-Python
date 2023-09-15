@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block contenidoQueCambia %}
+    <ul>
+        
+        {% for curso in lista_cursos %}
+        <li>{{lista.marca}} {{lista.raza_pet}} </li>
+        {% endfor %}
+
+    </ul>
+{% endblock contenidoQueCambia %}

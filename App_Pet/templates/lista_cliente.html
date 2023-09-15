@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block contenidoQueCambia %}
+    <ul>
+        
+        {% for client in lista_cliente %}
+        <li>{{lista.nombre}} {{lista.movil}} </li>
+        {% endfor %}
+
+    </ul>
+{% endblock contenidoQueCambia %}

@@ -1,0 +1,21 @@
+{% extends 'padre.html' %}
+
+{% block contenidoQueCambia %}
+    
+    <ul>
+            
+        {% for cliente in clientes %}
+            <li>
+                <a href="{% url 'DetalleClientes' cliente.id %}">{{curso}}</a>
+            </li>
+            <div>
+                <button>
+                    <a href="{% url 'ActualizarClientes' cliente.id %}">Editar</a>
+                </button>
+            </div>
+        {% endfor %}
+
+    </ul>
+    <a href="{% url 'CreaCliente' %}">Crear curso</a>
+
+{% endblock contenidoQueCambia %}

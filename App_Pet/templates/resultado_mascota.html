@@ -1,0 +1,13 @@
+{% extends 'padre.html' %}
+
+{% block contenidoQueCambia %}
+    <h1>Resultado de búsqueda</h1>
+
+    <ul>
+
+        
+        {% for nombre in nombres %}
+            <li>
+                {{nombre.nombre_cliente}}
+            </li>
+        {% endfor %}
