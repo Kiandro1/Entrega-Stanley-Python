@@ -3,7 +3,7 @@ from django.contrib.auth.views import LogoutView
 from App_Pet.views import *
 
 urlpatterns = [
-    path('',inicio,name="Inicio"),
+    path('',inicio, name="Inicio"),
     
     path('cliente/', cliente, name='Cliente'),
     path('lista-cliente/', lista_cliente, name= 'ListaCliente'),

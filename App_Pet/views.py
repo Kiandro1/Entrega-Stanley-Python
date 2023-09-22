@@ -62,7 +62,7 @@ def buscar_cliente(request):
 def resultado_cliente(request):
     return render(request, 'cliente_resultado.html')
 
-@staff_member_required(login_url='/App_Pet/login')
+@staff_member_required(login_url='/app-pet/login')
 def lista_cliente(request):
 
     clientes = Cliente.objects.all()
@@ -124,6 +124,7 @@ def editar_cliente(request,id):
 
         return render(request, "editar_cliente.html", {"miFomulario": miFormulario, "id": clientes.id})
 
+
 def elimina_cliente(request,id):
     
     if request.method == 'POST':
@@ -132,11 +133,11 @@ def elimina_cliente(request,id):
         
         cliente = Cliente.objects.all()
 
-        return render(request, 'elimina_cliente.html', {'id':cliente,'mensaje': 'Cliente eliminado'})
+        return render(request, 'lista_cliente.html', {'id':cliente,'mensaje': f'Cliente: {clientes} eliminado!!'})
     else:
         return render (request, 'lista_cliente.html', {'mensaje':'Cliente no eliminado'})
 
-@login_required
+
 def mascota(request):
     return render(request,'mascota.html')
 
@@ -276,14 +277,14 @@ def alimento_formulario(req):
     
     if req.method == 'POST':
 
-        miFormulario = Alimento_Pet(req.POST)
+        miFormulario = AlimentoFormulario(req.POST)
 
         if miFormulario.is_valid():
 
             print(miFormulario.cleaned_data)
             data = miFormulario.cleaned_data
 
-            marca_alimento = AlimentoFormulario(marca=data["marca_alimento"], raza_pet=data["raza"])
+            marca_alimento = Alimento_Pet(marca=data["marca"], raza_pet=data["raza_pet"])
             marca_alimento.save()
             return render(req, "inicio.html", {"mensaje": "Marca creada"})
         else:
@@ -311,7 +312,7 @@ def buscar_alimento(request):
 def resultado_alimento(request):
     return render(request, "resultado_alimento.html")
 
-@staff_member_required(login_url='/App_Pet/login')
+@staff_member_required(login_url='/app-pet/login')
 def lista_alimento(request):
 
     alimentos = Alimento_Pet.objects.all()
@@ -374,7 +375,7 @@ def elimina_alimento(request,id):
         
         alimentos = Alimento_Pet.objects.all()
 
-        return render(request, 'elimina_alimento.html', {'id':alimentos,'mensaje': 'Alimento eliminado'})
+        return render(request, 'lista_alimento.html', {'id':alimentos,'mensaje': 'Alimento eliminado'})
     else:
         return render (request, 'lista_alimento.html', {'mensaje':'Alimento no eliminado'})
 # Create your views here.
