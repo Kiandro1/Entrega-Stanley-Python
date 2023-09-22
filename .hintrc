@@ -21,7 +21,8 @@
     "axe/structure": [
       "default",
       {
-        "list": "off"
+        "list": "off",
+        "listitem": "off"
       }
     ],
     "axe/forms": [
@@ -35,6 +36,7 @@
       {
         "nested-interactive": "off"
       }
-    ]
+    ],
+    "button-type": "off"
   }
 }

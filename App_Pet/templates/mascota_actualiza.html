@@ -1,8 +1,8 @@
-{% extends 'padre.html' %}
+{% extends 'base.html' %}
 
 {% block contenidoQueCambia %}
     
-    <form action="{% url 'ActualizarClientes' cliente.id%}" method="post">{% csrf_token %}
+    <form action="{% url 'ActualizarMascota' mascota.id%}" method="post">{% csrf_token %}
 
         {{form.as_p}}
 

@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Landing Page - Start Bootstrap Theme</title>
+        <title>Todo Mascota</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Bootstrap icons-->
@@ -22,13 +22,18 @@
         <nav class="navbar navbar-light bg-light static-top">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'Inicio' %}">Inicio</a>
-                <a class="navbar-brand" href="{% url 'ClienteFormulario' %}">Cliente</a>
+                <a class="navbar-brand" href="{% url 'Cliente' %}">Cliente</a>
                 <a class="navbar-brand" href="{% url 'Mascota' %}">Mascota</a>
                 <a class="navbar-brand" href="{% url 'Alimento' %}">Alimento</a>
-            
+                <a class="navbar-brand" href="{% url 'Registrar' %}">Registrarse</a>
+
                 {% if user.is_authenticated %}
+                {% if url %}
+                    <img src="{{url}}" height="30px" alt="avatar">
+                {% endif %}
                     <p>Bienvenido !!</p>
                     <a class="btn btn-primary" href="{% url 'Logout' %}">Logout</a>
+                    <a class="btn btn-primary" href="{% url 'EditarPerfil' %}">Editar Perfil</a>{% csrf_token %}
                 {% else %}
                     <a class="btn btn-primary" href="{% url 'Login' %}">Login</a>
                 {% endif %}

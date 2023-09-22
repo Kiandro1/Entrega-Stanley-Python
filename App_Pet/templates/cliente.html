@@ -3,18 +3,18 @@
 {% block contenidoQueCambia %}
     <div>
         <form method="post">{% csrf_token %}
-            <button><a href="{% url 'AlimentoFormulario' %}">Cargar alimento</a></button>
+            <button><a href="{% url 'ClienteFormulario' %}">Cargar cliente</a></button>
         </form>
     </div>
 
     <div>
         <form method="post">{% csrf_token %}
-            <button><a href="{% url 'ListaAlimento' %}">Lista de alimentos</a></button>
+            <button><a href="{% url 'ListaCliente' %}">Lista de clientes</a></button>
         </form>
     </div>
     <div>
         <form method="post">{% csrf_token %}
-            <button><a href="{% url 'BuscarAlimento' %}">Buscar alimentos</a></button>
+            <button><a href="{% url 'BuscarCliente' %}">Buscar cliente</a></button>
         </form>
     </div>
 

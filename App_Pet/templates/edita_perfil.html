@@ -2,7 +2,7 @@
 
 {% block contenidoQueCambia %}
     
-    <form action="{% url 'EditarCliente' id %}" method="post">{% csrf_token %}
+    <form action="{% url 'EditarPerfil' %}" method="post">{% csrf_token %}
 
         {{miFomulario.as_p}}
 

@@ -1,72 +1,38 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpRequest
 from .models import Mascota, Cliente, Alimento_Pet, Avatar
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
-from .forms import ClienteFormulario, MascotaFormulario, AlimentoFormulario
+from .forms import ClienteFormulario, AlimentoFormulario, UserEditForm, AvatarFormulario
 # Create your views here.
-def mascota(req, nombre, nombre_cliente):
+def inicio(request):
+    try:
+        avatar = Avatar.objects.get(user=request.user.id)
+        return render(request, "inicio.html", {"url": avatar.imagen.url})
+    except:
+        return render(request, "inicio.html")
 
-    nombre_pet = Mascota(nombre=nombre, nombre_cliente=nombre_cliente)
-    nombre_pet.save()
+def cliente(request):
 
-    return HttpResponse(f"""
-        <p>Nombre de mascota: {nombre_pet.nombre} - Nombre de cliente: {nombre_pet.nombre_cliente} agregado!</p>
-    """)
-# def cliente(req, nombre, movil):
+    return render(request, 'cliente.html')
 
-#     cliente_mascota = Cliente(nombre=nombre, movil=movil)
-#     cliente.save()
+def cliente_formulario(request):
 
-#     return HttpResponse(f"<p>Cliente: {cliente_mascota.nombre} - Móvil: {cliente_mascota.movil} agregado!</p>")
-    
+    print('method', request.method)
+    print('post', request.POST)
 
+    if request.method == 'POST':
 
-def inicio(req):
-        
-        return render(req, "inicio.html")
+        miFormulario = ClienteFormulario(request.POST)
 
-def lista_mascota(req):
-    
-    lista = Mascota.objects.all()
-
-    return render(req, "lista_mascota.html", {"lista_mascota": lista})
-
-
-
-def alimento(req):
-
-    return render(req, "alimento.html")
-
-def lista_alimento(req):  
-    
-    lista = Alimento_Pet.objects.all()
-
-    return render(req, "lista_alimento.html", {"lista_mascota": lista})
-
-@login_required
-def lista_cliente(req):
-
-    lista = Cliente.objects.all()
-
-    return render(req, "lista_ciente.html", {"lista_cliente": lista})
-
-def cliente_formulario(req):
-
-    print('method', req.method)
-    print('post', req.POST)
-
-    if req.method == 'POST':
-
-        miFormulario = ClienteFormulario(req.POST)
-        
         if miFormulario.is_valid():
 
             print(miFormulario.cleaned_data)
@@ -74,42 +40,41 @@ def cliente_formulario(req):
 
             nombre_cliente = Cliente(nombre=data["nombre"], apellido=data["apellido"], movil=data['movil'], email=data['email'])
             nombre_cliente.save()
-            return render(req, "inicio.html", {"mensaje": "Cliente creado con éxito"})
+            return render(request, "inicio.html", {"mensaje": "Cliente creado con éxito"})
         else:
-            return render(req, "inicio.html", {"mensaje": "Formulario inválido"})
+            return render(request, "inicio.html", {"mensaje": "Formulario inválido"})
     else:
 
         miFormulario = ClienteFormulario()
 
-        return render(req, "cliente_formulario.html", {"miFomulario": miFormulario})
+        return render(request, "cliente_formulario.html", {"miFomulario": miFormulario})
 
-def busqueda_cliente(req):
+def buscar_cliente(request):
 
-    return render(req, "busqueda_cliente.html")
-
-def buscar_cliente(req):
-
-    if req.GET["nombre"]:
-        nombre = req.GET["nombre"]
+    if request.GET.get("nombre"):
+        nombre = request.GET.get("nombre", "defoult")
         movil = Cliente.objects.filter(nombre__icontains=nombre)
         if movil:
-            return render(req, "resultado_busqueda.html", {"movil": movil})
+            return render(request, "busqueda_cliente.html", {"movil": movil})
     else:
-        return HttpResponse('No escribiste ninguna nombre')
+        return render(request, "busqueda_cliente.html",{'mensaje':'No escribiste ningun nombre'})
+    
+def resultado_cliente(request):
+    return render(request, 'cliente_resultado.html')
 
 @staff_member_required(login_url='/App_Pet/login')
-def lista_cliente(req):
+def lista_cliente(request):
 
     clientes = Cliente.objects.all()
 
-    return render(req, "leer_cliente.html", {"clientes": clientes})
+    return render(request, "lista_cliente.html", {"clientes": clientes})
 
 def crea_cliente(req):
 
     if req.method == 'POST':
 
         miFormulario = ClienteFormulario(req.POST)
-        
+
         if miFormulario.is_valid():
 
             data = miFormulario.cleaned_data
@@ -123,29 +88,31 @@ def crea_cliente(req):
 
         miFormulario = ClienteFormulario()
 
-        return render(req, "profesor_formulario.html", {"miFomulario": miFormulario})
+        return render(req, "cliente_formulario.html", {"miFomulario": miFormulario})
 
 
-def editar_cliente(req, id):
+def editar_cliente(request,id):
 
     clientes = Cliente.objects.get(id=id)
 
-    if req.method == 'POST':
+    if request.method == 'POST':
 
-        miFormulario = ClienteFormulario(req.POST)
-        
+        miFormulario = ClienteFormulario(request.POST)
+
         if miFormulario.is_valid():
 
             data = miFormulario.cleaned_data
 
             clientes.nombre = data["nombre"]
             clientes.apellido = data["apellido"]
-            clientes.email = data["movil"]
-            clientes.profesion = data["email"]
+            clientes.movil = data["movil"]
+            clientes.email = data["email"]
             clientes.save()
-            return render(req, "inicio.html", {"mensaje": "Cliente actualizado con éxito"})
+            return render(request, "inicio.html", {"mensaje": "Cliente actualizado con éxito"})
+
         else:
-            return render(req, "inicio.html", {"mensaje": "Formulario inválido"})
+
+            return render(request, "inicio.html", {"mensaje": "Formulario inválido"})
     else:
 
         miFormulario = ClienteFormulario(initial={
@@ -155,31 +122,50 @@ def editar_cliente(req, id):
             "email": clientes.email,
         })
 
-        return render(req, "editar_cliente.html", {"miFomulario": miFormulario, "id": clientes.id})
+        return render(request, "editar_cliente.html", {"miFomulario": miFormulario, "id": clientes.id})
+
+def elimina_cliente(request,id):
     
+    if request.method == 'POST':
+        clientes = Cliente.objects.get(id=id)
+        clientes.delete()
+        
+        cliente = Cliente.objects.all()
 
-# class ClienteList(ListView):
-#     model = Cliente
-#     template_name = "cliente_list.html"
-#     context_object_name = "cliente"
+        return render(request, 'elimina_cliente.html', {'id':cliente,'mensaje': 'Cliente eliminado'})
+    else:
+        return render (request, 'lista_cliente.html', {'mensaje':'Cliente no eliminado'})
 
+@login_required
+def mascota(request):
+    return render(request,'mascota.html')
 
-# class ClienteDetail(LoginRequiredMixin, DetailView):
-#     model = Cliente
-#     template_name = "cliente_detail.html"
-#     context_object_name = "cliente"
+class MascotaList(ListView):
+    model = Mascota
+    template_name = "mascota_list.html"
+    context_object_name = "mascotas"
 
-# class ClienteCreate(CreateView):
-#     model = Cliente
-#     template_name = "cliente_create.html"
-#     fields = ["nombre", "apellido", "movil", "email"]
-#     success_url = "/app-pet/"
+class MascotaDetail(LoginRequiredMixin, DetailView):
+    model = Mascota
+    template_name = "mascota_detalle.html"
+    context_object_name = "mascotas"
 
-# class ClienteUpdate(UpdateView):
-#     model = Cliente
-#     template_name = "cliente_update.html"
-#     fields = ("__all__")
-#     success_url = "/App_Pet/"
+class MascotaCreate(CreateView):
+    model = Mascota
+    template_name = "mascota_create.html"
+    fields = ["nombre", "nombre_cliente", "raza", "peso","edad"]
+    success_url = "/Inicio/"
+
+class MascotaUpdate(UpdateView):
+    model = Mascota
+    template_name = "mascota_actualiza.html"
+    fields = ("__all__")
+    success_url = "/app_pet/"
+
+class MascotaDelete(DeleteView):
+    model = Mascota
+    template_name = "mascota_delete.html"
+    success_url = "/app-pet/"
 
 
 def loginView(req):
@@ -232,55 +218,66 @@ def register(req):
         miFormulario = UserCreationForm()
         return render(req, "registro.html", {"miFomulario": miFormulario})
 
-def mascota_formulario(req):
+def editar_perfil(req):
 
-    print('method', req.method)
-    print('post', req.POST)
+    usuario = req.user
 
     if req.method == 'POST':
 
-        miFormulario = MascotaFormulario(req.POST)
-        
+        miFormulario = UserEditForm(req.POST, instance=req.user)
+
         if miFormulario.is_valid():
 
-            print(miFormulario.cleaned_data)
             data = miFormulario.cleaned_data
 
-            nombre_mascota = Mascota(nombre=data["nombre"], nombre_cliente=data["nombre_cliente"], raza=data['raza'], peso=data['peso'])
-            nombre_mascota.save()
-            return render(req, "inicio.html", {"mensaje": "Mascota creado con éxito"})
+            usuario.first_name = data["first_name"]
+            usuario.last_name = data["last_name"]
+            usuario.email = data["email"]
+            usuario.set_password(data["password1"])
+            usuario.save()
+            return render(req, "inicio.html", {"mensaje": "Perfil actualizado con éxito"})
+        else:
+            return render(req, "edita_perfil.html", {"miFomulario": miFormulario})
+    else:
+
+        miFormulario = UserEditForm(instance=req.user)
+
+        return render(req, "edita_perfil.html", {"miFomulario": miFormulario})
+
+def agregar_avatar(req):
+
+    if req.method == 'POST':
+
+        miFormulario = AvatarFormulario(req.POST, req.FILES)
+
+        if miFormulario.is_valid():
+
+            data = miFormulario.cleaned_data
+
+            avatar = Avatar(user=req.user, imagen=data["imagen"])
+
+            avatar.save()
+
+            return render(req, "inicio.html", {"mensaje": f"Avatar actualizado con éxito!"})
+
         else:
             return render(req, "inicio.html", {"mensaje": "Formulario inválido"})
+
     else:
+        miFormulario = AvatarFormulario()
+        return render(req, "agregarAvatar.html", {"miFomulario": miFormulario})
 
-        miFormulario = MascotaFormulario()
 
-        return render(req, "mascota_formulario.html", {"miFomulario": miFormulario})
 
-def busqueda_mascota(req):
+def alimento(req):
+    return render(req, "alimento.html")
 
-    return render(req, "busqueda_mascota.html")
-
-def buscar_mascota(req):
-
-    if req.GET["nombre"]:
-        nombre = req.GET["nombre"]
-        nombre_cliente = Mascota.objects.filter(nombre__icontains=nombre)
-        if nombre_cliente:
-            return render(req, "resultado_mascota.html", {"nombre_cliente": nombre_cliente})
-    else:
-        return HttpResponse('No escribiste ninguna nombre')
+def alimento_formulario(req):
     
-    
-def mascota_alimento(req):
-
-    print('method', req.method)
-    print('post', req.POST)
-
     if req.method == 'POST':
 
         miFormulario = Alimento_Pet(req.POST)
-        
+
         if miFormulario.is_valid():
 
             print(miFormulario.cleaned_data)
@@ -297,19 +294,87 @@ def mascota_alimento(req):
 
         return render(req, "alimento_formulario.html", {"miFomulario": miFormulario})
 
-def busqueda_alimento(req):
+def busqueda_alimento(req): 
 
     return render(req, "busqueda_alimento.html")
 
-def buscar_alimento(req):
+def buscar_alimento(request):
 
-    if req.GET["marca"]:
-        marca = req.GET["marca"]
+    if request.GET.get('marca'):
+        marca = request.GET.get('marca','defoult')
         raza_especie = Alimento_Pet.objects.filter(marca__icontains=marca)
         if raza_especie:
-            return render(req, "resultado_alimento.html", {"raza_especie": raza_especie})
+            return render(request, "resultado_alimento.html", {"raza_especie": raza_especie})
     else:
-        return HttpResponse('No escribiste ninguna nombre')
+        return render(request,"busqueda_alimento.html",{'mensaje':'No escribiste ninguna nombre'})
 
+def resultado_alimento(request):
+    return render(request, "resultado_alimento.html")
 
+@staff_member_required(login_url='/App_Pet/login')
+def lista_alimento(request):
+
+    alimentos = Alimento_Pet.objects.all()
+
+    return render(request, "lista_alimento.html", {"alimentos": alimentos})
+
+def crea_alimento(req):
+
+    if req.method == 'POST':
+
+        miFormulario = AlimentoFormulario(req.POST)
+
+        if miFormulario.is_valid():
+
+            data = miFormulario.cleaned_data
+
+            alimento = AlimentoFormulario(marca=data["marca"], raza=data["raza"])
+            alimento.save()
+            return render(req, "inicio.html", {"mensaje": "Alimento creado con éxito"})
+        else:
+            return render(req, "inicio.html", {"mensaje": "Formulario inválido"})
+    else:
+
+        miFormulario = AlimentoFormulario()
+
+        return render(req, "alimento_formulario.html", {"miFomulario": miFormulario})
+def editar_alimento(request,id):
+
+    alimentos = Alimento_Pet.objects.get(id=id)
+
+    if request.method == 'POST':
+
+        miFormulario = AlimentoFormulario(request.POST)
+
+        if miFormulario.is_valid():
+
+            data = miFormulario.cleaned_data
+
+            alimentos.marca = data["marca"]
+            alimentos.raza_pet = data["raza_pet"]
+            alimentos.save()
+            return render(request, "inicio.html", {"mensaje": "Alimento actualizado con éxito"})
+
+        else:
+
+            return render(request, "inicio.html", {"mensaje": "Formulario inválido"})
+    else:
+
+        miFormulario = AlimentoFormulario(initial={
+            "marca": alimentos.marca,
+            "raza": alimentos.raza_pet,
+        })
+
+        return render(request, "editar_alimento.html", {"miFomulario": miFormulario, "id": alimentos.id})
+def elimina_alimento(request,id):
+    
+    if request.method == 'POST':
+        alimento = Alimento_Pet.objects.get(id=id)
+        alimento.delete()
+        
+        alimentos = Alimento_Pet.objects.all()
+
+        return render(request, 'elimina_alimento.html', {'id':alimentos,'mensaje': 'Alimento eliminado'})
+    else:
+        return render (request, 'lista_alimento.html', {'mensaje':'Alimento no eliminado'})
 # Create your views here.

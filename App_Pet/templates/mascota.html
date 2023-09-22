@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block contenidoQueCambia %}
+    <div>
+    <form method="post">{% csrf_token %}
+        <button><a href="{% url 'CreaMascota' %}">Cargar mascota</a></button>
+    </form>
+    </div>
+    <div>
+
+        <button><a href="{% url 'ListaMascota' %}">Lista de mascotas</a></button>
+    
+    </div>
+
+
+
+{% endblock contenidoQueCambia %}

@@ -10,8 +10,9 @@ class Cliente(models.Model):
     email = models.EmailField(null=True)
 
     def __str__(self):
-        return f'{self.nombre} {self.movil}'
-
+        return  f'{self.nombre}, {self.apellido}, {self.movil}, {self.email}'
+    class Meta():
+        ordering = ('nombre', 'movil')
 class Mascota(models.Model):
 
     nombre = models.CharField(max_length=50)
@@ -21,7 +22,7 @@ class Mascota(models.Model):
     edad = models.IntegerField()
 
     def __str__(self):
-        return self.nombre, self.nombre_cliente
+        return f'{self.nombre}, {self.nombre_cliente}'
     
     class Meta():
         ordering = ('nombre', 'raza')

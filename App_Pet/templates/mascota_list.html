@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block contenidoQueCambia %}
+    
+    <ul>
+            
+        {% for mascota in mascotas %}
+            <li>
+                <a href="{% url 'DetalleMascota' mascota.id %}"> Mascota: {{mascota.nombre}} - Dueño: {{mascota.nombre_cliente}}</a>
+            </li>
+            <div>
+                <button>
+                    <a href="{% url 'EliminaMascota' mascota.id %}">Eliminar</a>
+                </button>
+                <button>
+                    <a href="{% url 'ActualizarMascota' mascota.id %}">Editar</a>
+                </button>
+            </div>
+        {% endfor %}
+
+    </ul>
+    <a href="{% url 'CreaMascota' %}">Crear mascota</a>
+
+{% endblock contenidoQueCambia %}

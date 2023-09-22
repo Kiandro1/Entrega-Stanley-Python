@@ -1,11 +1,19 @@
 {% extends 'base.html' %}
 
 {% block contenidoQueCambia %}
-    <ul>
-        
-        {% for curso in lista_cursos %}
-        <li>{{lista.marca}} {{lista.raza_pet}} </li>
+    <ul> 
+        {% for alimento in alimentos %}
+            <li>{{alimento}} </li>
+            <div>
+                <form action="{% url 'EliminaAlimento' alimento.id %}" method="post">{% csrf_token %}
+                    <button type="submit">Eliminar alimento</button>
+                </form>                   
+                <button>
+                    <a href="{% url 'EditarAlimento' alimento.id %}">Editar alimento</a>
+                </button>
+            </div>
         {% endfor %}
 
     </ul>
+    {{mensaje}}
 {% endblock contenidoQueCambia %}
